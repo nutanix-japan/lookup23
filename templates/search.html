@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Google Sheets</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <center><h4>Enter your Email</h4></center>
+        <center>
+        <form method="POST" action="/">
+            <div class="form-group">
+                <input type="text" class="textbox" name="search_term" placeholder="email@company.com" id="search_term">
+            </div>
+            </br>
+            <button type="submit" class="button button3">Search</button>
+        </form>
+        </center>
+        {% if rows %}
+            <h4>HPOC Details</h4>
+            {% for key,value in map.items() %}
+                <h5>{{ key }}</h5>
+                <table class="table table-striped">
+                    <colgroup>
+                        <col width="50%">
+                        <col width="50%">
+                    </colgroup>
+                    <tbody>
+                        {% for n in range(map[key]|length) %}
+                            <tr>
+                                {% for row in rows %}
+                                    <td>{{ row[value[n]] }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        {% endif %}
+    </div>
+    
+   
+</body>
+</html>
