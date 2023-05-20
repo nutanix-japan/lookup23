@@ -141,14 +141,19 @@ body {
 
 .copy-button {
   padding: 8px;
-  background-color: #4685ff;
-  color: hsl(285, 100%, 85%);
+  background-color: #d3d7de;
+  color: hsl(282, 100%, 2%);
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .copy-button:hover {
-  background-color: #3366cc;
+  background-color: #c8c5d2;
 }
 
+.copy-button1 {border-radius: 2px;}
+.copy-button2 {border-radius: 4px;}
+.copy-button3 {border-radius: 8px;}
+.copy-button4 {border-radius: 12px;}
+.copy-button5 {border-radius: 50%;}

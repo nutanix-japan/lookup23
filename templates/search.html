@@ -32,11 +32,11 @@
                   <tr>
                     <td></td> <!-- Empty first column -->
                     {% for row in rows %}
-                      {% if loop.index == 3 %} <!-- Check if it's the third column -->
+                      {% if loop.index == 2 %} <!-- Check if it's the third column -->
                         <td>
                           <div>
                             {{ row[value[n]] }}
-                            <button class="copy-button" data-clipboard-text="{{ row[value[n]] }}">
+                            <button class="copy-button copy-button3" data-clipboard-text="{{ row[value[n]] }}">
                               Copy
                             </button>
                           </div>
@@ -55,7 +55,7 @@
     <script>
         var clipboard = new ClipboardJS('.copy-button');
         clipboard.on('success', function(e) {
-          alert('Copied!');
+          // alert('Copied!');
         });
         clipboard.on('error', function(e) {
           alert('Copy failed. Please select the text and copy manually.');
