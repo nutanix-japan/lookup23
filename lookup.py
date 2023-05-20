@@ -13,14 +13,14 @@ creds = service_account.Credentials.from_service_account_file(
 
 r1_r2_map = {
     "Consultant Information": [0,1],
-    "Nutanix Cluster Information": [2,3,4,5],
-    "Lab - Consolidated Storage": [6,7,8,9,10,11,12,13],
-    "Calm Iaas":[14,15,16],
-    "Disaster recovery":[17,18,19,20,21,22],
-    "NDB":[23,24,25],
-    "Lab - OCP (Openshift, Objects, Files)":[26,27,28,29,30,31,32],
-    "Lab GTS23 - Migrate":[33,34,35,36,37,38],
-    "Lab GTS23 - Secure":[39,40,41]
+    "Nutanix Cluster Information": [2,3,4,5,6],
+    "Lab - Consolidated Storage": [7,8,9,10,11,12,13,14],
+    "Calm Iaas":[15,16,17],
+    "Disaster recovery":[18,19,20,21,22,23],
+    "NDB":[24,25,26],
+    "Lab - OCP (Openshift, Objects, Files)":[27,28,29,30,31,32,33],
+    "Lab GTS23 - Migrate":[34,35,36,37,38,39],
+    "Lab GTS23 - Secure":[40,41,42]
 }
 
 # Define function to search for rows in the sheet
