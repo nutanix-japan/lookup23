@@ -3,6 +3,7 @@
 <head>
     <title>Search Google Sheets</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -17,28 +18,48 @@
         </form>
         </center>
         {% if rows %}
-            <h4>HPOC Details</h4>
-            {% for key,value in map.items() %}
-                <h5>{{ key }}</h5>
-                <table class="table table-striped">
-                    <colgroup>
-                        <col width="50%">
-                        <col width="50%">
-                    </colgroup>
-                    <tbody>
-                        {% for n in range(map[key]|length) %}
-                            <tr>
-                                {% for row in rows %}
-                                    <td>{{ row[value[n]] }}</td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% endfor %}
+          <h4>HPOC Details</h4>
+          {% for key, value in map.items() %}
+            <h5>{{ key }}</h5>
+            <table class="table table-striped">
+              <colgroup>
+                <col style="width: 20%;">
+                <col style="width: 30%;">
+                <col style="width: 50%;">
+              </colgroup>
+              <tbody>
+                {% for n in range(map[key]|length) %}
+                  <tr>
+                    <td></td> <!-- Empty first column -->
+                    {% for row in rows %}
+                      {% if loop.index == 3 %} <!-- Check if it's the third column -->
+                        <td>
+                          <div>
+                            {{ row[value[n]] }}
+                            <button class="copy-button" data-clipboard-text="{{ row[value[n]] }}">
+                              Copy
+                            </button>
+                          </div>
+                        </td>
+                      {% else %}
+                        <td>{{ row[value[n]] }}</td>
+                      {% endif %}
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endfor %}
         {% endif %}
     </div>
-    
-   
+    <script>
+        var clipboard = new ClipboardJS('.copy-button');
+        clipboard.on('success', function(e) {
+          alert('Copied!');
+        });
+        clipboard.on('error', function(e) {
+          alert('Copy failed. Please select the text and copy manually.');
+        });
+    </script>
 </body>
 </html>

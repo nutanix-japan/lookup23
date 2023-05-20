@@ -37,8 +37,13 @@ body {
 }
 
 .table td:nth-child(2) {
-  width: 90%;
+  width: 10%;
 }
+
+.table td:nth-child(3) {
+  width: 80%;
+}
+
 
 
 .panel-heading {
@@ -133,3 +138,17 @@ body {
 .textbox:focus {
   color: #333; /* Color for the user-inputted text */
 }
+
+.copy-button {
+  padding: 8px;
+  background-color: #4685ff;
+  color: hsl(285, 100%, 85%);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.copy-button:hover {
+  background-color: #3366cc;
+}
+
