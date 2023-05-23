@@ -18,9 +18,9 @@ r1_r2_map = {
     "Calm Iaas":[15,16,17],
     "Disaster recovery":[18,19,20,21,22,23],
     "NDB":[24,25,26],
-    "Lab - OCP (Openshift, Objects, Files)":[27,28,29,30,31,32,33],
-    "Lab GTS23 - Migrate":[34,35,36,37,38,39],
-    "Lab GTS23 - Secure":[40,41,42]
+    "Lab - OCP (Openshift, Objects, Files)":[27,28,29,30,31,32,33,34],
+    "Lab GTS23 - Migrate":[35,36,37,38,39,40],
+    "Lab GTS23 - Secure":[41,42,43]
 }
 
 # Define function to search for rows in the sheet
