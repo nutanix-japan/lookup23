@@ -10,12 +10,15 @@ from typing import Optional, Annotated
 class search(BaseModel):
     search: Optional[str] = None
 
+#Enter sheet values here
+wksht_key="1meMee6yCvtplZCkljknSYtdFECBEPauw8kn-1YB5x7A"
+wksht_id=547612463
+
+#Instantiate FastAPI object and jinja templates
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-#app.mount("/static", staticfiles.DirectoryResponse, directory="static")
-
-#app.mount("/static", StaticFiles(directory="static"), name="static")
+# FastAPI mount for static directory for css reference 
 app.mount("/static", StaticFiles(directory="static", html = True), name="site")
 
 
@@ -31,7 +34,7 @@ async def read_google_sheet(request: Request):
 
 @app.post("/")
 async def search_in_sheet(request: Request, search: str = Form(...)):
-    sheet = gc.open_by_key('1meMee6yCvtplZCkljknSYtdFECBEPauw8kn-1YB5x7A').get_worksheet_by_id(547612463)
+    sheet = gc.open_by_key(wksht_key).get_worksheet_by_id(wksht_id)
     expected_headers = sheet.row_values(1)
     # print(f"Expected Headers: {expected_headers}")
     data = sheet.get_all_records(expected_headers=expected_headers)
