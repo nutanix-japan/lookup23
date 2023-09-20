@@ -6,13 +6,21 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from pydantic import BaseModel
 from typing import Optional, Annotated
+import os
+from dotenv import load_dotenv
+
+# Load pydantic data validation for GET/POST parameters
 
 class search(BaseModel):
     search: Optional[str] = None
 
-#Enter sheet values here
-wksht_key="1meMee6yCvtplZCkljknSYtdFECBEPauw8kn-1YB5x7A"
-wksht_id=547612463
+# Load get env variables from the .env file
+load_dotenv()
+
+#Getting sheet values from .env
+
+wksht_key=os.getenv('wksht_key')
+wksht_id=int(os.getenv('wksht_id'))
 
 #Instantiate FastAPI object and jinja templates
 app = FastAPI()

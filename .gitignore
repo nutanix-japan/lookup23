@@ -6,3 +6,4 @@ credentials.json
 *old*
 *.old
 *.old1
+.env
