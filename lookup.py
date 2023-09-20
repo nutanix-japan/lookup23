@@ -1,9 +1,18 @@
-from flask import Flask, render_template, request
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from pydantic import BaseModel
+from typing import Optional, Annotated
 import os
 
-app = Flask(__name__)
+class Email(BaseModel):
+    email: Optional[str] = None
+
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
 # Set up credentials for Google Sheets API
 creds = service_account.Credentials.from_service_account_file(
@@ -48,20 +57,24 @@ def search_sheet(spreadsheet_id, sheet_name, search_col, search_term):
     print(len(rows[0]))
     return filtered_rows
 
-# Define a route for the search page
+@app.get('/', response_class=HTMLResponse)
+def main(request: Request):
+    return templates.TemplateResponse('search.html', {'request': request})
+
+Define a route for the search page
 @app.route('/', methods=['GET', 'POST'])
 def search():
     # Get the search parameters from the form submission
     if request.method == 'POST':
-        search_term = request.form['search_term']
-        # Search the sheet for matching rows
-        spreadsheet_id = '1meMee6yCvtplZCkljknSYtdFECBEPauw8kn-1YB5x7A'
-        sheet_name = 'Sheet1'
-        search_col = 'Email'
-        rows = search_sheet(spreadsheet_id, sheet_name, search_col, search_term)
-        return render_template('search.html', rows=rows, map=r1_r2_map)
+       search_term = request.form['search_term']
+       # Search the sheet for matching rows
+       spreadsheet_id = '1meMee6yCvtplZCkljknSYtdFECBEPauw8kn-1YB5x7A'
+       sheet_name = 'Sheet1'
+       search_col = 'Email'
+       rows = search_sheet(spreadsheet_id, sheet_name, search_col, search_term)
+       return templates.TemplateResponse('search.html', rows=rows, map=r1_r2_map)
     else:
-        return render_template('search.html', rows=None)
-
+       return templates.TemplateResponse('search.html', rows=None)
+    
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

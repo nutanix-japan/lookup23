@@ -4,13 +4,15 @@
     <title>Search Google Sheets</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <script src="/static/script.js"></script>
 </head>
 <body>
     <div class="container">
         <center><h4>APJ CX Cluster Lookup Site</h4></center>
         <center><h4>Enter your Email</h4></center>
         <center>
-        <form method="POST" action="/">
+        <form method="GET" action="/">
             <div class="form-group">
                 <input type="text" class="textbox" name="search_term" placeholder="email@company.com" id="search_term">
             </div>

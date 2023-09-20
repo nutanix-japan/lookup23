@@ -20,7 +20,7 @@ body {
 }
 
 .table th {
-  background-color: #4685ff;
+  background-color: #7b5bdc;
   color: #ffffff;
 }
 
@@ -124,7 +124,7 @@ body {
 
 .textbox {
   background-color: #ffffff;
-  border: 2px solid #4685ff;
+  border: 2px solid #7b5bdc;
   border-radius: 4px;
   color: #000000;
   font-size: 16px;
