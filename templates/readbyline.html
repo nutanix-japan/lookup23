@@ -9,24 +9,25 @@
 </head>
 <body>
     <div class="container">
-    <center><h4>APJ CX Cluster Lookup Site</h4></center>
+    <center><h4>GEMS Cluster Lookup Site</h4></center>
     <center><h4>Enter your Email</h4></center>
     <center>
     <form action="/" method="POST">
         <div class="form-group">
-            <input type="text" class="textbox" name="search" placeholder="email@company.com" id="search">
+            <center><input type="text" class="textbox" name="search" placeholder="email@company.com" id="search"></center>
         </div>
         </br>
         <button type="submit" class="button button3">Search</button>
     </form>
     </center>
     {% if result %}
-        <centre><h4>HPOC Details</h4></centre>
-        <table class="table table-striped">
-            <colgroup>
-                <col style="width: 50%;">
-                <col style="width: 50%;">
-            </colgroup>
+    <center> <h4>HPOC Details</h4> </center>
+    <table class="table table-striped">
+        <colgroup>
+            <col style="width: 50%;">
+            <col style="width: 50%;">
+        </colgroup>
+        {% if result.items %}
             <tr>
                 <th>Items</th>
                 <th>Value</th>
@@ -41,7 +42,10 @@
                     </td>
                 </tr>
             {% endfor %}
-        </table>
+        {% else %}
+           <center> {{ result }} </center>
+        {% endif %}
+    </table>
     {% endif %}
     </div>
     <script>

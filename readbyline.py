@@ -17,11 +17,6 @@ class search(BaseModel):
 # Load get env variables from the .env file
 load_dotenv()
 
-#Getting sheet values from .env
-
-wksht_key=os.getenv('wksht_key')
-wksht_id=int(os.getenv('wksht_id'))
-
 #Instantiate FastAPI object and jinja templates
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -34,6 +29,7 @@ app.mount("/static", StaticFiles(directory="static", html = True), name="site")
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 credentials = ServiceAccountCredentials.from_json_keyfile_name(
     'credentials.json', scope)
+print(credentials)
 gc = gspread.authorize(credentials)
 
 @app.get("/")
@@ -42,7 +38,7 @@ async def read_google_sheet(request: Request):
 
 @app.post("/")
 async def search_in_sheet(request: Request, search: str = Form(...)):
-    sheet = gc.open_by_key(wksht_key).get_worksheet_by_id(wksht_id)
+    sheet = gc.open_by_key(os.getenv('wksht_key')).get_worksheet_by_id(int(os.getenv('wksht_id')))
     expected_headers = sheet.row_values(1)
     # print(f"Expected Headers: {expected_headers}")
     data = sheet.get_all_records(expected_headers=expected_headers)
@@ -52,5 +48,8 @@ async def search_in_sheet(request: Request, search: str = Form(...)):
         if record['Email'] == search:
             result = record
             break
+        
+    if result is None:
+        result = "User not found. Contact instructor"
 
     return templates.TemplateResponse("readbyline.html", {"request": request, "result": result})
