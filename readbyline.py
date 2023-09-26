@@ -38,7 +38,8 @@ async def read_google_sheet(request: Request):
 
 @app.post("/")
 async def search_in_sheet(request: Request, search: str = Form(...)):
-    sheet = gc.open_by_key(os.getenv('wksht_key')).get_worksheet_by_id(int(os.getenv('wksht_id')))
+    #sheet = gc.open_by_key(os.getenv('wksht_key')).get_worksheet_by_id(int(os.getenv('wksht_id')))
+    sheet = gc.open_by_key(os.getenv('wksht_key')).worksheet(os.getenv('wksht_name'))
     expected_headers = sheet.row_values(1)
     # print(f"Expected Headers: {expected_headers}")
     data = sheet.get_all_records(expected_headers=expected_headers)
