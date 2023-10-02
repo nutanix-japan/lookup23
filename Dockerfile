@@ -1,15 +1,39 @@
-FROM python:alpine3.11
+# FROM python:3.9
 
-# set a directory for the app
-WORKDIR /home
+# WORKDIR /code
 
-# copy all the files to the container
-COPY . /home/
+# COPY ./requirements.txt /code/requirements.txt
+# COPY ./static/ /code/app/static/
+# COPY ./templates/ /code/app/templates/
+# COPY .env /code/app/.env
+# COPY ./credentials.json /code/app/credentials.json
 
-# install pip dependencies
-RUN pip install -r requirements.txt
+# RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-# run the command to start bottle web server
-CMD ["python3", "./lookup.py"]
+# COPY ./app /code/app
+# RUN ls -laR /code
 
-# docker run -dit -p  5000:5000 -v /home/ubuntu/github/lookup/APAC.xlsx:/mnt/APAC.xlsx -e sheet_path=/mnt/APAC.xlsx --restart unless-stopped ariesbabu/luckychan
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# # If running behind a proxy like Nginx or Traefik add --proxy-headers
+# # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
+
+FROM python:alpine
+
+WORKDIR /
+
+COPY ./requirements.txt /requirements.txt
+COPY ./static/ /app/static/
+COPY ./templates/ /app/templates/
+COPY .env /app/.env
+COPY ./credentials.json /app/credentials.json
+
+RUN pip install --no-cache-dir --upgrade -r /requirements.txt
+
+COPY ./app/ /app/
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# If running behind a proxy like Nginx or Traefik add --proxy-headers
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
+

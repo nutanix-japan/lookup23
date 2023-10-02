@@ -1,0 +1,69 @@
+---
+#cloud-config
+
+# Set the hostname
+hostname: llama
+
+# Create a new user
+users:
+  - default
+  - name: nutanix
+    groups: wheel, users
+    ssh_authorized_keys:
+    # Paste the generated public key here
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGD8G3rihOrlVjdiayQy/6TX3tGiLZrIBAwtsgpeq/BsY3uprTalg7VFuwa/hqDtWxU7ewHPNknVjDntOBcAFXFjfs3bHc7FKJ50Bw1vfK6q3u+LSEVpy0u8gJx7AsMa26TlYUaVH2+KlgPOaSvoJYuHy3Zwshw8dLK3Qx29dDSxhotAJivZE8TT4jL+Be60y1E72zCUzWzJFfldMwlgyxw323r6awgxmGYlqUoz3ljkHI9Xflb9fMkBWCYhDDv2y7dHEc3W1vRokKvd4bFpbWUFJbEiwOj4PFTUqoLKhqmCmjbjJBmkWeA2qDzjoxzI/16T1CigFZDdAdMTIDa/KD lb
+    # You can also use the salter 1N or 6N format using OPENSSL (openssl passwd -1 -salt SaltSalt "yourplaintextpassword")
+    # Paste the generated password here
+    passwd: $1$SaltSalt$1EiAB7saSDcj6v5MJGxeC0
+    shell: /bin/bash
+    lock-passwd: false
+    ssh_pwauth: True                 
+
+# Enable password authentication for root
+ssh_pwauth: True
+
+# Run package upgrade
+package_upgrade: true
+
+# Install the following packages - add extra that you would need
+packages:
+- git
+- bind-utils
+- nmap
+- curl
+- wget 
+- vim
+- python3
+- python3-pip
+- yum-utils
+
+# Run additional commands
+runcmd:
+  - 'sleep 10'
+  - 'echo "nutanix ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
+
+#cloud-config
+
+users:
+  - default
+  - name: nutanix
+    groups: wheel, users
+    passwd: $1$SaltSalt$1EiAB7saSDcj6v5MJGxeC0
+    shell: /bin/bash
+    lock-passwd: false
+    ssh_pwauth: True
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGD8G3rihOrlVjdiayQy/6TX3tGiLZrIBAwtsgpeq/BsY3uprTalg7VFuwa/hqDtWxU7ewHPNknVjDntOBcAFXFjfs3bHc7FKJ50Bw1vfK6q3u+LSEVpy0u8gJx7AsMa26TlYUaVH2+KlgPOaSvoJYuHy3Zwshw8dLK3Qx29dDSxhotAJivZE8TT4jL+Be60y1E72zCUzWzJFfldMwlgyxw323r6awgxmGYlqUoz3ljkHI9Xflb9fMkBWCYhDDv2y7dHEc3W1vRokKvd4bFpbWUFJbEiwOj4PFTUqoLKhqmCmjbjJBmkWeA2qDzjoxzI/16T1CigFZDdAdMTIDa/KD nutanix
+package_upgrade: true
+packages:
+  - git
+  - bind-utils
+  - nmap
+  - curl
+  - wget 
+  - vim
+  - python3
+  - python3-pip
+  - yum-utils
+output:
+  all: ">> /var/log/cloud-init.log"
