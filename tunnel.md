@@ -21,7 +21,7 @@
 
     services: 
     # # Lookup container starts here 
-    lookup:
+      lookup:
         image: lookup23
         container_name: lookup23
         restart: unless-stopped
@@ -30,7 +30,7 @@
         ports:
         - 8080:8000
 
-    tunnel:
+      tunnel:
         image: cloudflare/cloudflared
         restart: unless-stopped
         command: tunnel run
