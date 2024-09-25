@@ -73,9 +73,9 @@
    - Path - optional 
 
 6. Identity provides - One-time PIP
-7. Choose Include email domains
+7. Choose the email domains that you would like allow
 
-Browse to you ``subdomain.domain.com``
+Browse to you ``subdomain.domain.com`` with a secure SSL cert. 
 
 That's it
 
