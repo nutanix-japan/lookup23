@@ -17,9 +17,20 @@
 
 # # If running behind a proxy like Nginx or Traefik add --proxy-headers
 # # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
+FROM python:3.9-alpine
 
-FROM python:alpine
-
+# Install Rust and Cargo dependencies
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    cargo \
+    python3-dev \
+    libmagic \
+    libxml2-dev \
+    bash \
+    make
+    
 WORKDIR /
 
 COPY ./requirements.txt /requirements.txt
@@ -36,4 +47,3 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 # If running behind a proxy like Nginx or Traefik add --proxy-headers
 # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
-
