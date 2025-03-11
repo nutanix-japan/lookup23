@@ -334,9 +334,9 @@ button {
   border-bottom: 1px solid var(--border);
 }
 
-.table tr:hover td {
+/* .table tr:hover td {
   background-color: var(--accent);
-}
+} */
 
 .property-cell {
   width: 30%;
@@ -535,4 +535,16 @@ button {
 .textbox:focus,
 .button:focus {
   animation: ring 1.5s cubic-bezier(0.19, 1, 0.22, 1) infinite;
+}
+
+/* Light theme hover */
+.table tbody tr:hover {
+  background-color: #f0f0f0;
+  /* Light gray for light theme */
+}
+
+/* Dark theme hover */
+.dark-theme .table tbody tr:hover {
+  background-color: #4a4949;
+  /* Darker gray for dark theme */
 }
