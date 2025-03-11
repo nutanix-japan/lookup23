@@ -23,7 +23,8 @@ app.mount("/static", StaticFiles(directory="../app/static"), name="static")
 
 # Load Google Sheets credentials
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-credentials = ServiceAccountCredentials.from_json_keyfile_name('../credentials.json', scope)
+#credentials = ServiceAccountCredentials.from_json_keyfile_name('../credentials.json', scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_name(str(Path(BASE_DIR, 'credentials.json')), scope)
 
 gc = gspread.authorize(credentials)
 
