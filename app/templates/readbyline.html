@@ -1,61 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
-    <title>Lookup HPOC Details</title>
+    <title>Cluster Portal | HPOC Details</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
 </head>
+
 <body>
-    <div class="container">
-    <center><h4>GEMS Cluster Lookup Site</h4></center>
-    <center><h4>Enter your Email</h4></center>
-    <center>
-    <form action="/" method="POST">
-        <div class="form-group">
-            <center><input type="text" class="textbox" name="search" placeholder="email@company.com" id="search"></center>
+    <div class="app-container">
+        <div class="card">
+            <div class="card-header">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                        </path>
+                        <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
+                        <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
+                        <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <div class="header-content">
+                    <h1>Cluster Lookup Portal</h1>
+                    <p class="subtitle">Access your HPOC details</p>
+                </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="card-body">
+                <div class="search-section">
+                    <form action="/" method="POST" class="search-form">
+                        <div class="form-group">
+                            <label for="search">Email Address</label>
+                            <div class="input-wrapper">
+                                <div class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                        </path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                </div>
+                                <input type="email" class="textbox" name="search" placeholder="Enter your email address"
+                                    id="search" required autocomplete="email">
+                                <button type="submit" class="button primary-button">
+                                    <span>Search</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="hint-text">We'll find your HPOC details associated with this email</p>
+                        </div>
+                    </form>
+                </div>
+
+                {% if result %}
+                <div class="result-section">
+                    <div class="result-header">
+                        <h2>HPOC Details</h2>
+                        {% if result.items %}
+                        <div class="badge">Found</div>
+                        {% endif %}
+                    </div>
+
+                    {% if result.items %}
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in result.items() %}
+                                <tr>
+                                    <td class="property-cell">
+                                        <span class="property-name">{{ key }}</span>
+                                    </td>
+                                    <td class="value-cell">
+                                        <div class="value-container">
+                                            <span class="value-text">{{ value }}</span>
+                                            <button class="icon-button copy-button" data-clipboard-text="{{ value }}"
+                                                aria-label="Copy to clipboard">
+                                                <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                    height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1">
+                                                    </path>
+                                                </svg>
+                                                <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                    height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert {% if 'not found' in result %}alert-error{% else %}alert-info{% endif %}">
+                        <div class="alert-icon">
+                            {% if 'not found' in result %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <span>{{ result }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="card-footer">
+                <div class="footer-content">
+                    <!--    <p>Need assistance? <a href="#" class="support-link">Contact support</a></p> -->
+                    <p>Need assistance? Contact your Instructor</p>
+                </div>
+            </div>
         </div>
-        </br>
-        <button type="submit" class="button button3">Search</button>
-    </form>
-    </center>
-    {% if result %}
-    <center> <h4>HPOC Details</h4> </center>
-    <table class="table table-striped">
-        <colgroup>
-            <col style="width: 30%;">
-            <col style="width: 70%;">
-        </colgroup>
-        {% if result.items %}
-            <tr>
-                <th>Items</th>
-                <th>Value</th>
-            </tr>
-            {% for key, value in result.items() %}
-                <tr>
-                    <td align="right">{{ key }}</td>
-                    <td>{{ value }}
-                        <button class="copy-button copy-button3" data-clipboard-text="{{ value }}">
-                            Copy
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-        {% else %}
-           <center> {{ result }} </center>
-        {% endif %}
-    </table>
-    {% endif %}
     </div>
-    <div></div>
+
+    <div class="toast" id="copyToast">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Copied to clipboard</span>
+    </div>
+
     <script>
-        var clipboard = new ClipboardJS('.copy-button');
-        clipboard.on('success', function(e) {
-          // alert('Copied!');
+        // Theme handling
+        const themeToggle = document.getElementById('themeToggle');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+        // Set initial theme based on system preference
+        if (prefersDarkScheme.matches) {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.add('light-theme');
+        }
+
+        // Allow manual toggling as well
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            document.body.classList.toggle('light-theme');
         });
-        clipboard.on('error', function(e) {
-          alert('Copy failed. Please select the text and copy manually.');
+
+        // Handle clipboard functionality
+        const clipboard = new ClipboardJS('.copy-button');
+
+        clipboard.on('success', function (e) {
+            // Visual feedback on the button
+            const button = e.trigger;
+            button.classList.add('copied');
+
+            // Show toast
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
+
+            // Reset after delay
+            setTimeout(() => {
+                toast.classList.remove('show');
+                button.classList.remove('copied');
+            }, 2000);
+
+            e.clearSelection();
+        });
+
+        clipboard.on('error', function (e) {
+            const toast = document.getElementById('copyToast');
+            toast.textContent = 'Failed to copy. Please try again.';
+            toast.classList.add('show', 'error');
+
+            setTimeout(() => {
+                toast.classList.remove('show', 'error');
+                toast.textContent = 'Copied to clipboard';
+            }, 2000);
         });
     </script>
 </body>
+
+</html>

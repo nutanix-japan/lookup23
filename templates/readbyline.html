@@ -3,59 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
-    <title>Lookup HPOC Details</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <title>Cluster Lookup Site</title>
+    <style>
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .copy-btn { cursor: pointer; }
+    </style>
 </head>
 <body>
     <div class="container">
-    <center><h4>GEMS Cluster Lookup Site</h4></center>
-    <center><h4>Enter your Email</h4></center>
-    <center>
-    <form action="/" method="POST">
-        <div class="form-group">
-            <center><input type="text" class="textbox" name="search" placeholder="email@company.com" id="search"></center>
-        </div>
-        </br>
-        <button type="submit" class="button button3">Search</button>
-    </form>
-    </center>
-    {% if result %}
-    <center> <h4>HPOC Details</h4> </center>
-    <table class="table table-striped">
-        <colgroup>
-            <col style="width: 30%;">
-            <col style="width: 70%;">
-        </colgroup>
-        {% if result.items %}
-            <tr>
-                <th>Items</th>
-                <th>Value</th>
-            </tr>
-            {% for key, value in result.items() %}
-                <tr>
-                    <td align="right">{{ key }}</td>
-                    <td>{{ value }}
-                        <button class="copy-button copy-button3" data-clipboard-text="{{ value }}">
-                            Copy
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-        {% else %}
-           <center> {{ result }} </center>
+        <h1>Cluster Lookup Site</h1>
+        
+        <h2>Enter your Email</h2>
+        
+        <form method="POST">
+            <div class="form-group">
+                <input type="email" name="search" placeholder="Enter email to search" required>
+                <button type="submit">Search</button>
+            </div>
+        </form>
+
+        {% if result %}
+            <h2>HPOC Details</h2>
+            
+            {% if result is mapping %}
+                <table>
+                    <tr>
+                        <th>Item</th>
+                        <th>Value</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for key, value in result.items() %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                            <td>
+                                <button class="copy-btn" onclick="copyToClipboard('{{ value }}')">Copy</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>{{ result }}</p>
+            {% endif %}
         {% endif %}
-    </table>
-    {% endif %}
     </div>
-    <div></div>
+
     <script>
-        var clipboard = new ClipboardJS('.copy-button');
-        clipboard.on('success', function(e) {
-          // alert('Copied!');
-        });
-        clipboard.on('error', function(e) {
-          alert('Copy failed. Please select the text and copy manually.');
-        });
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
     </script>
 </body>
+</html>
