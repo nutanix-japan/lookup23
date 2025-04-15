@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-secondary {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .logs-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background-color: var(--card);
+            font-family: monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .log-entry {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-timestamp {
+            color: var(--muted-foreground);
+            white-space: nowrap;
+        }
+
+        .log-level {
+            min-width: 60px;
+            font-weight: 500;
+        }
+
+        .log-level-INFO {
+            color: #3b82f6;
+        }
+
+        .log-level-ERROR {
+            color: var(--destructive);
+        }
+
+        .log-level-WARNING {
+            color: #f59e0b;
+        }
+
+        .log-message {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-idle {
+            background-color: #10b981;
+        }
+
+        .status-refreshing {
+            background-color: #f59e0b;
+        }
+
+        .status-error {
+            background-color: var(--destructive);
+        }
+
+        .refresh-timer {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .log-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .secondary-button {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+            border: 1px solid var(--border);
+        }
+
+        .secondary-button:hover {
+            background-color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="card">
+            <div class="card-header">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="header-content">
+                    <h1>App Dashboard</h1>
+                    <p class="subtitle">Monitor cache status and application logs</p>
+                </div>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-sun sun-icon"></i>
+                    <i class="fas fa-moon moon-icon"></i>
+                </button>
+            </div>
+
+            <div class="card-body">
+                <div class="nav-tabs">
+                    <a href="/" class="nav-tab">Search</a>
+                    <a href="/dashboard" class="nav-tab active">Dashboard</a>
+                </div>
+
+                <h2 class="mb-4">Cache Status</h2>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Records in Cache</div>
+                        <div class="stat-value">{{ cache_info.records }}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Last Refresh</div>
+                        <div class="stat-value" id="last-refresh">{{ cache_info.last_refresh }}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Cache Status</div>
+                        <div class="stat-value">
+                            <span class="status-indicator">
+                                <span class="status-dot status-{{ cache_info.status }}"></span>
+                                <span id="cache-status">{{ cache_info.status | capitalize }}</span>
+                            </span>
+                        </div>
+                        <div class="stat-secondary" id="next-refresh-timer"></div>
+                    </div>
+                </div>
+
+                <div class="actions-bar">
+                    <button id="refresh-cache" class="button primary-button">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh Cache Now</span>
+                    </button>
+                </div>
+
+                <h2 class="mb-4">Application Logs</h2>
+                <div class="log-buttons">
+                    <button id="clear-logs" class="button secondary-button">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Clear View</span>
+                    </button>
+                    <button id="pause-logs" class="button secondary-button">
+                        <i class="fas fa-pause"></i>
+                        <span>Pause</span>
+                    </button>
+                </div>
+                <div class="logs-container" id="logs-container">
+                    <!-- Logs will be inserted here by JavaScript -->
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="footer-content">
+                    <span>Need help? <a href="#" class="support-link">Contact support</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const themeToggle = document.getElementById('theme-toggle');
+            const storedTheme = localStorage.getItem('theme') || 'light-theme';
+
+            document.body.classList.add(storedTheme);
+
+            themeToggle.addEventListener('click', function () {
+                if (document.body.classList.contains('light-theme')) {
+                    document.body.classList.remove('light-theme');
+                    document.body.classList.add('dark-theme');
+                    localStorage.setItem('theme', 'dark-theme');
+                } else {
+                    document.body.classList.remove('dark-theme');
+                    document.body.classList.add('light-theme');
+                    localStorage.setItem('theme', 'light-theme');
+                }
+            });
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+
+            toast.className = 'toast show';
+            if (type === 'error') {
+                toast.classList.add('error');
+            } else {
+                toast.classList.remove('error');
+            }
+
+            toastMessage.textContent = message;
+
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+
+        // Refresh cache functionality
+        document.getElementById('refresh-cache').addEventListener('click', async function () {
+            const button = this;
+            const originalContent = button.innerHTML;
+
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner spinner"></i> <span>Refreshing...</span>';
+
+            try {
+                const response = await fetch('/api/refresh-cache', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showToast('Cache refresh started');
+                } else {
+                    showToast('Error refreshing cache: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error refreshing cache', 'error');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalContent;
+                updateCacheStatus();
+            }
+        });
+
+        // Update cache status
+        async function updateCacheStatus() {
+            try {
+                const response = await fetch('/api/cache-status');
+                const data = await response.json();
+
+                document.getElementById('last-refresh').textContent = data.last_refresh;
+
+                const statusDot = document.querySelector('.status-dot');
+                statusDot.className = `status-dot status-${data.status}`;
+                document.getElementById('cache-status').textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+
+                // Update next refresh timer
+                if (data.next_refresh && data.status === 'idle') {
+                    const timeLeft = Math.max(0, Math.floor(data.next_refresh - data.current_time));
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    document.getElementById('next-refresh-timer').textContent =
+                        `Next auto-refresh in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                } else {
+                    document.getElementById('next-refresh-timer').textContent = '';
+                }
+            } catch (error) {
+                console.error('Error fetching cache status:', error);
+            }
+        }
+
+        // Set interval to update cache status every second
+        setInterval(updateCacheStatus, 1000);
+        updateCacheStatus(); // Initial update
+
+        // WebSocket for real-time logs
+        const logsContainer = document.getElementById('logs-container');
+        let logsPaused = false;
+        let storedLogs = [];
+
+        document.getElementById('pause-logs').addEventListener('click', function () {
+            logsPaused = !logsPaused;
+            this.innerHTML = logsPaused ?
+                '<i class="fas fa-play"></i><span>Resume</span>' :
+                '<i class="fas fa-pause"></i><span>Pause</span>';
+
+            if (!logsPaused) {
+                renderLogs(storedLogs);
+            }
+        });
+
+        document.getElementById('clear-logs').addEventListener('click', function () {
+            logsContainer.innerHTML = '';
+        });
+
+        function renderLogs(logs) {
+            if (logsPaused) return;
+
+            logsContainer.innerHTML = '';
+
+            logs.forEach(log => {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+
+                const timestamp = document.createElement('div');
+                timestamp.className = 'log-timestamp';
+                timestamp.textContent = log.timestamp;
+
+                const level = document.createElement('div');
+                level.className = `log-level log-level-${log.level}`;
+                level.textContent = log.level;
+
+                const message = document.createElement('div');
+                message.className = 'log-message';
+                message.textContent = log.message;
+
+                logEntry.appendChild(timestamp);
+                logEntry.appendChild(level);
+                logEntry.appendChild(message);
+
+                logsContainer.appendChild(logEntry);
+            });
+
+            // Scroll to bottom
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // Connect to WebSocket for real-time logs
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws/logs`;
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = function (e) {
+            console.log('WebSocket connection established');
+        };
+
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'logs') {
+                storedLogs = data.data;
+                renderLogs(data.data);
+            }
+        };
+
+        socket.onclose = function (event) {
+            if (event.wasClean) {
+                console.log(`Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+            } else {
+                console.log('Connection died');
+                showToast('Log connection lost. Please refresh the page.', 'error');
+            }
+        };
+
+        socket.onerror = function (error) {
+            console.error(`WebSocket error: ${error.message}`);
+        };
+
+        // Send ping every 30 seconds to keep the connection alive
+        setInterval(() => {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send('ping');
+            }
+        }, 30000);
+    </script>
+</body>
+
+</html>
